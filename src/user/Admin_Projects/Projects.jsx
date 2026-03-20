@@ -5,6 +5,7 @@ import ProjectCards from "../../components/projects/ProjectCards";
 import ProjectModal from "../../components/Projects/ProjectModal";
 
 const Projects = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [projects, setProject] = useState([
     { id: 1, name: "Rohit", start: "2026-02-03", end: "2026-02-10", status: "Ongoing" },
     { id: 2, name: "Ram", start: "2026-02-03", end: "2026-02-10", status: "Completed" },
@@ -61,11 +62,27 @@ const Projects = () => {
       <ProjectCards data={data} />
       <ProjectFilters projects={projects} setData={setData} />
       
-      <ProjectsTable 
-        data={data} 
-        onDelete={deleteProject} 
-        onEdit={startEdit} 
-      />
+      {isLoading ? (
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-x-auto">
+          <table className="w-full min-w-[600px]">
+            <tbody className="animate-pulse">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <tr key={i} className="border-t">
+                  {Array.from({ length: 5 }).map((_, j) => (
+                    <td key={j} className="px-4 py-3"><div className="h-3 bg-gray-200 rounded w-full"></div></td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <ProjectsTable 
+          data={data} 
+          onDelete={deleteProject} 
+          onEdit={startEdit} 
+        />
+      )}
 
       {/* Add Modal */}
       {open && (

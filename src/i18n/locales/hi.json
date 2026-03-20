@@ -1,0 +1,32 @@
+{
+  "nav": {
+    "dashboard": "डैशबोर्ड", "employees": "कर्मचारी", "attendance": "उपस्थिति",
+    "leave": "छुट्टी", "projects": "प्रोजेक्ट", "tasks": "कार्य और टाइमशीट",
+    "payroll": "वेतन", "reports": "रिपोर्ट", "announcements": "घोषणाएं",
+    "helpdesk": "हेल्पडेस्क", "wfh": "घर से काम", "assets": "संपत्ति",
+    "notifications": "सूचनाएं", "policies": "नीतियां",
+    "inventory": "इन्वेंटरी", "settings": "सेटिंग्स", "logout": "लॉग आउट"
+  },
+  "dashboard": {
+    "title": "डैशबोर्ड", "totalEmployees": "कुल कर्मचारी",
+    "present": "आज उपस्थित", "onLeave": "छुट्टी पर", "tasks": "कार्य"
+  },
+  "leave": {
+    "title": "छुट्टी प्रबंधन", "apply": "छुट्टी आवेदन", "approve": "स्वीकृत",
+    "reject": "अस्वीकृत", "pending": "लंबित", "approved": "स्वीकृत",
+    "rejected": "अस्वीकृत", "type": "छुट्टी का प्रकार", "from": "से तारीख", "to": "तक तारीख"
+  },
+  "attendance": {
+    "title": "उपस्थिति", "mark": "उपस्थिति दर्ज करें", "present": "उपस्थित",
+    "absent": "अनुपस्थित", "late": "देर से", "wfh": "घर से काम", "halfDay": "आधा दिन"
+  },
+  "employees": {
+    "title": "कर्मचारी", "add": "कर्मचारी जोड़ें", "edit": "संपादित करें", "delete": "हटाएं",
+    "name": "नाम", "email": "ईमेल", "department": "विभाग", "role": "भूमिका"
+  },
+  "common": {
+    "save": "सहेजें", "cancel": "रद्द करें", "delete": "हटाएं", "search": "खोजें",
+    "filter": "फ़िल्टर", "reset": "रीसेट", "export": "निर्यात", "loading": "लोड हो रहा है...",
+    "noData": "कोई डेटा नहीं मिला", "actions": "क्रियाएं", "status": "स्थिति"
+  }
+}

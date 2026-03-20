@@ -32,8 +32,9 @@ const ProjectModal = ({ onClose, onSave, initialData }) => {
         
         <div className="space-y-4">
           <div>
-            <label className="text-sm font-medium text-gray-600">Project Name</label>
+            <label htmlFor="project-name" className="text-sm font-medium text-gray-600">Project Name</label>
             <input
+              id="project-name"
               type="text"
               className="w-full border border-gray-400 rounded-lg px-3 py-2 mt-1 outline-none focus:border-blue-500"
               value={project.name}
@@ -43,8 +44,9 @@ const ProjectModal = ({ onClose, onSave, initialData }) => {
           
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-gray-600">Start Date</label>
+              <label htmlFor="project-start" className="text-sm font-medium text-gray-600">Start Date</label>
               <input
+                id="project-start"
                 type="date"
                 className="w-full border border-gray-400 rounded-lg px-3 py-2 mt-1 outline-none focus:border-blue-500"
                 value={project.start}
@@ -52,8 +54,9 @@ const ProjectModal = ({ onClose, onSave, initialData }) => {
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-600">End Date</label>
+              <label htmlFor="project-end" className="text-sm font-medium text-gray-600">End Date</label>
               <input
+                id="project-end"
                 type="date"
                 className="w-full border border-gray-400 rounded-lg px-3 py-2 mt-1 outline-none focus:border-blue-500"
                 value={project.end}
@@ -63,8 +66,9 @@ const ProjectModal = ({ onClose, onSave, initialData }) => {
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-600">Status</label>
+            <label htmlFor="project-status" className="text-sm font-medium text-gray-600">Status</label>
             <select
+              id="project-status"
               className="w-full border border-gray-400 rounded-lg px-3 py-2 mt-1 outline-none"
               value={project.status}
               onChange={(e) => setProject({ ...project, status: e.target.value })}

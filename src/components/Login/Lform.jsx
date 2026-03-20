@@ -1,154 +1,206 @@
-import React from "react";
-import { useFormik } from "formik";
-import { loginSchema } from "../../schemas";
-import { useNavigate, Link } from "react-router-dom";
-
-const initialValues = {
-  email: "",
-  password: "",
-  role: "",
-};
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { toast } from "react-toastify";
+import api from "../../services/api";
 
 const Lform = () => {
-  const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const {
-    values,
-    errors,
-    touched,
-    handleBlur,
-    handleChange,
-    handleSubmit,
-  } = useFormik({
-    initialValues,
-    validationSchema: loginSchema,
-    onSubmit: (values, action) => {
+  const [step, setStep]               = useState("credentials");
+  const [mfaMethod, setMfaMethod]     = useState("");
+  const [tempToken, setTempToken]     = useState("");
+  const [mfaCode, setMfaCode]         = useState("");
+  const [maskedEmail, setMaskedEmail] = useState("");
+  const [isLoading, setIsLoading]     = useState(false);
+  const [showPass, setShowPass]       = useState(false);
 
-      const userData = {
-        email: values.email,
-        role: values.role,
-        token: "demo_jwt_token",
-      };
+  const [creds, setCreds] = useState({ systemEmail: "", password: "" });
+  const [errors, setErrors] = useState({});
 
-      localStorage.setItem("user", JSON.stringify(userData));
+  const validateCreds = () => {
+    const e = {};
+    if (!creds.systemEmail.trim()) e.systemEmail = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(creds.systemEmail)) e.systemEmail = "Invalid email format";
+    if (!creds.password) e.password = "Password is required";
+    return e;
+  };
 
-      alert(`Login Successful as ${values.role}`);
+  // Step 1 — submit credentials
+  const handleCredentialSubmit = async (e) => {
+    e.preventDefault();
+    const errs = validateCreds();
+    if (Object.keys(errs).length) return setErrors(errs);
 
-      if (values.role === "Admin") {
-        navigate("/dashboard");
-      } 
-      else if (values.role === "HR") {
-        navigate("/employees");
-      } 
-      else {
-        navigate("/attendance");
+    setIsLoading(true);
+    try {
+      const { data } = await api.post("/auth/login", {
+        systemEmail: creds.systemEmail,
+        password:    creds.password,
+      });
+      setMfaMethod(data.data.mfaMethod);
+      setTempToken(data.data.tempToken);
+      setMaskedEmail(data.data.maskedEmail || "");
+      setStep("mfa");
+      if (data.data.mfaMethod === "otp") {
+        toast.info("OTP sent to your personal email");
       }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Login failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-      action.resetForm();
-    },
-  });
+  // Step 2 — submit MFA code
+  const handleMfaSubmit = async (e) => {
+    e.preventDefault();
+    if (!mfaCode.trim()) return toast.error("Enter the verification code");
+
+    setIsLoading(true);
+    try {
+      const { data } = await api.post("/auth/verify-mfa", { tempToken, mfaCode });
+      login(data.data.user);
+      toast.success(`Welcome back, ${data.data.user.firstName}!`);
+      window.location.replace("/dashboard");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Verification failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    try {
+      await api.post("/auth/resend-otp", { tempToken });
+      toast.success("OTP resent to your personal email");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Could not resend OTP");
+    }
+  };
+
+  const inputCls = (name) =>
+    `w-full h-10 border rounded px-3 focus:ring-2 focus:ring-blue-500 outline-none text-sm ${
+      errors[name] ? "border-red-500 bg-red-50" : "border-gray-300"
+    }`;
 
   return (
     <div>
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-lg w-full max-w-md shadow"
-      >
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">
-          Login to your account
-        </h2>
+      {/* ── Step 1: Credentials ─────────────────────────────────────────── */}
+      {step === "credentials" && (
+        <form onSubmit={handleCredentialSubmit}
+          className="bg-white p-8 rounded-lg w-full max-w-md shadow">
+          <h2 className="text-3xl font-bold text-gray-800 mb-2">Login to your account</h2>
+          <p className="text-gray-500 mb-6 text-sm">Enter your NetPair login email and password</p>
 
-        <p className="text-gray-500 mb-6">
-          Enter your account details below
-        </p>
+          <div className="mb-4">
+            <label htmlFor="login-email" className="block font-medium mb-1 text-sm">NetPair Email</label>
+            <input id="login-email" type="email" name="systemEmail"
+              value={creds.systemEmail}
+              onChange={(e) => { setCreds(p => ({ ...p, systemEmail: e.target.value })); setErrors(p => ({ ...p, systemEmail: "" })); }}
+              placeholder="name.surname.role@netpair.com"
+              className={inputCls("systemEmail")} />
+            {errors.systemEmail && (
+              <p className="text-red-600 text-xs mt-1 flex items-center gap-1">
+                <i className="ri-error-warning-line" />{errors.systemEmail}
+              </p>
+            )}
+          </div>
 
-        {/* EMAIL */}
-        <div className="mb-4">
-          <label className="block font-medium mb-1">Email</label>
-          <input
-            type="email"
-            name="email"
-            value={values.email}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            placeholder="Enter your email"
-            className="w-full h-10 border rounded px-3 focus:ring-2 focus:ring-blue-500"
-          />
-          {errors.email && touched.email && (
-            <p className="text-red-600 text-sm">{errors.email}</p>
+          <div className="mb-4">
+            <label htmlFor="login-password" className="block font-medium mb-1 text-sm">Password</label>
+            <div className="relative">
+              <input id="login-password" type={showPass ? "text" : "password"} name="password"
+                value={creds.password}
+                onChange={(e) => { setCreds(p => ({ ...p, password: e.target.value })); setErrors(p => ({ ...p, password: "" })); }}
+                placeholder="Enter your password"
+                className={`${inputCls("password")} pr-10`} />
+              <button type="button" onClick={() => setShowPass(!showPass)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                <i className={showPass ? "ri-eye-off-line" : "ri-eye-line"} />
+              </button>
+            </div>
+            {errors.password && (
+              <p className="text-red-600 text-xs mt-1 flex items-center gap-1">
+                <i className="ri-error-warning-line" />{errors.password}
+              </p>
+            )}
+          </div>
+
+          <div className="flex justify-end mb-6 text-sm">
+            <Link to="/forgot" className="text-blue-700 font-semibold hover:underline">Forgot Password?</Link>
+          </div>
+
+          <button type="submit" disabled={isLoading}
+            className="w-full bg-blue-800 text-white py-2 rounded hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+            {isLoading ? (
+              <><svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>Checking...</>
+            ) : "Continue"}
+          </button>
+
+          <p className="text-center mt-5 text-sm">
+            Don't have an account?{" "}
+            <Link to="/employee/registration" className="text-blue-700 font-bold hover:underline">Sign Up</Link>
+          </p>
+        </form>
+      )}
+
+      {/* ── Step 2: MFA ─────────────────────────────────────────────────── */}
+      {step === "mfa" && (
+        <form onSubmit={handleMfaSubmit}
+          className="bg-white p-8 rounded-lg w-full max-w-md shadow">
+          <button type="button" onClick={() => { setStep("credentials"); setMfaCode(""); setMaskedEmail(""); }}
+            className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-4">
+            <i className="ri-arrow-left-line" /> Back
+          </button>
+
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Two-factor verification</h2>
+
+          {mfaMethod === "otp" && (
+            <>
+              <p className="text-gray-500 text-sm mb-3">A 6-digit code has been sent to your personal email.</p>
+              {maskedEmail && (
+                <div className="flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-lg px-4 py-2.5 mb-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                    fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                  </svg>
+                  <span className="text-blue-700 text-sm font-medium tracking-wide">{maskedEmail}</span>
+                </div>
+              )}
+              <p className="text-gray-400 text-xs mb-6">Check your inbox — valid for 10 minutes.</p>
+            </>
           )}
-        </div>
-
-        {/* PASSWORD */}
-        <div className="mb-4">
-          <label className="block font-medium mb-1">Password</label>
-          <input
-            type="password"
-            name="password"
-            value={values.password}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            placeholder="Enter your password"
-            className="w-full h-10 border rounded px-3 focus:ring-2 focus:ring-blue-500"
-          />
-          {errors.password && touched.password && (
-            <p className="text-red-600 text-sm">{errors.password}</p>
+          {mfaMethod === "totp" && (
+            <p className="text-gray-500 text-sm mb-6">Enter the 6-digit code from your authenticator app.</p>
           )}
-        </div>
 
-        {/* ROLE SELECT */}
-        <div className="mb-4">
-          <label className="block font-medium mb-1">Login As</label>
-          <select
-            name="role"
-            value={values.role}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            className="w-full h-10 border rounded px-3 focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">Select Role</option>
-            <option value="Admin">Admin</option>
-            <option value="HR">HR</option>
-            <option value="Employee">Employee</option>
-          </select>
+          <input type="text" maxLength={6} inputMode="numeric" placeholder="000000"
+            value={mfaCode} onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, ""))}
+            className="w-full h-16 border border-gray-300 rounded-lg text-center text-3xl tracking-[16px] font-mono outline-none focus:ring-2 focus:ring-blue-500 mb-5" />
 
-          {errors.role && touched.role && (
-            <p className="text-red-600 text-sm">{errors.role}</p>
+          <button type="submit" disabled={isLoading}
+            className="w-full bg-blue-800 text-white py-2 rounded hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+            {isLoading ? (
+              <><svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>Verifying...</>
+            ) : "Verify & Sign In"}
+          </button>
+
+          {mfaMethod === "otp" && (
+            <button type="button" onClick={handleResendOtp}
+              className="w-full mt-3 text-sm text-blue-700 hover:underline">
+              Resend code
+            </button>
           )}
-        </div>
-
-        {/* REMEMBER */}
-        <div className="flex justify-between mb-6 text-sm">
-          <label className="flex gap-2">
-            <input type="checkbox" className="accent-blue-700" />
-            Remember me
-          </label>
-
-          <Link
-            to="/forgot"
-            className="text-blue-700 font-semibold hover:underline"
-          >
-            Forgot Password?
-          </Link>
-        </div>
-
-        <button
-          type="submit"
-          className="w-full bg-blue-800 text-white py-2 rounded hover:bg-blue-600 transition"
-        >
-          Login
-        </button>
-
-        <p className="text-center mt-5 text-sm">
-          Don’t have an account?{" "}
-          <Link
-            to="/registration"
-            className="text-blue-700 font-bold hover:underline"
-          >
-            Sign Up
-          </Link>
-        </p>
-      </form>
+        </form>
+      )}
     </div>
   );
 };

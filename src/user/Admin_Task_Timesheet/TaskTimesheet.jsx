@@ -6,6 +6,7 @@ import AddTaskModal from "../../components/Task_Timesheet/AddTaskBtnModel";
 import TimesheetData from "../../components/Task_Timesheet/TimesheetData";
 
 const TaskTimesheet = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   // Initial data ko state mein load kiya
   const [tasks, setTasks] = useState(TimesheetData);
@@ -35,8 +36,23 @@ const TaskTimesheet = () => {
       <TimesheetCards data={tasks} />
       <TimesheetFilters />
 
-      {/* Ab table wahi data dikhayega jo state mein hai */}
-      <TimesheetTable tasks={tasks} setTasks={updateTasks} />
+      {isLoading ? (
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-x-auto">
+          <table className="w-full min-w-[600px]">
+            <tbody className="animate-pulse">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <tr key={i} className="border-t">
+                  {Array.from({ length: 6 }).map((_, j) => (
+                    <td key={j} className="px-4 py-3"><div className="h-3 bg-gray-200 rounded w-full"></div></td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <TimesheetTable tasks={tasks} setTasks={updateTasks} />
+      )}
 
       <AddTaskModal
         open={open}

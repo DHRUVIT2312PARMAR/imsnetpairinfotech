@@ -1,0 +1,32 @@
+{
+  "nav": {
+    "dashboard": "Dashboard", "employees": "Employees", "attendance": "Attendance",
+    "leave": "Leave", "projects": "Projects", "tasks": "Task & Timesheet",
+    "payroll": "Payroll", "reports": "Reports", "announcements": "Announcements",
+    "helpdesk": "Helpdesk", "wfh": "WFH", "assets": "Assets",
+    "notifications": "Notifications", "policies": "Policies",
+    "inventory": "Inventory", "settings": "Settings", "logout": "Logout"
+  },
+  "dashboard": {
+    "title": "Dashboard", "totalEmployees": "Total Employees",
+    "present": "Present Today", "onLeave": "On Leave", "tasks": "Tasks"
+  },
+  "leave": {
+    "title": "Leave Management", "apply": "Apply Leave", "approve": "Approve",
+    "reject": "Reject", "pending": "Pending", "approved": "Approved",
+    "rejected": "Rejected", "type": "Leave Type", "from": "From Date", "to": "To Date"
+  },
+  "attendance": {
+    "title": "Attendance", "mark": "Mark Attendance", "present": "Present",
+    "absent": "Absent", "late": "Late", "wfh": "WFH", "halfDay": "Half Day"
+  },
+  "employees": {
+    "title": "Employees", "add": "Add Employee", "edit": "Edit", "delete": "Delete",
+    "name": "Name", "email": "Email", "department": "Department", "role": "Role"
+  },
+  "common": {
+    "save": "Save", "cancel": "Cancel", "delete": "Delete", "search": "Search",
+    "filter": "Filter", "reset": "Reset", "export": "Export", "loading": "Loading...",
+    "noData": "No data found", "actions": "Actions", "status": "Status"
+  }
+}

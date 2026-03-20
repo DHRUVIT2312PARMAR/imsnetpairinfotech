@@ -1,5 +1,6 @@
 @import "tailwindcss";
- 
+@variant dark (&:where(.dark, .dark *));
+
 body::-webkit-scrollbar{
     display: none;
 }
@@ -8,5 +9,20 @@ tbl::-webkit-scrollbar{
 }
 
 body {
-    @apply bg-gray-100;
+    @apply bg-gray-100 dark:bg-gray-900;
+}
+
+.dark body {
+    color-scheme: dark;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    @apply bg-gray-100 dark:bg-gray-800;
+}
+::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 dark:bg-gray-600 rounded-full;
 }

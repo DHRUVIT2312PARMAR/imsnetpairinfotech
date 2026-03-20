@@ -49,8 +49,9 @@ const AddTaskModal = ({ open, onClose, onSave }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
           <div>
-            <label className="text-sm font-medium">Task Title *</label>
+            <label htmlFor="task-title" className="text-sm font-medium">Task Title *</label>
             <input
+              id="task-title"
               name="title"
               placeholder="Enter task title"
               onChange={handleChange}
@@ -59,8 +60,9 @@ const AddTaskModal = ({ open, onClose, onSave }) => {
           </div>
 
           <div>
-            <label className="text-sm font-medium">Assign Employee *</label>
+            <label htmlFor="task-employee" className="text-sm font-medium">Assign Employee *</label>
             <select
+              id="task-employee"
               name="employee"
               onChange={handleChange}
               className="border p-2 rounded-lg w-full mt-1"
@@ -73,8 +75,9 @@ const AddTaskModal = ({ open, onClose, onSave }) => {
           </div>
 
           <div>
-            <label className="text-sm font-medium">Estimated Hours</label>
+            <label htmlFor="task-hours" className="text-sm font-medium">Estimated Hours</label>
             <input
+              id="task-hours"
               type="number"
               name="hours"
               placeholder="e.g. 8"
@@ -84,8 +87,9 @@ const AddTaskModal = ({ open, onClose, onSave }) => {
           </div>
 
           <div>
-            <label className="text-sm font-medium">Start Date *</label>
+            <label htmlFor="task-startDate" className="text-sm font-medium">Start Date *</label>
             <input
+              id="task-startDate"
               type="date"
               name="startDate"
               onChange={handleChange}
@@ -94,8 +98,9 @@ const AddTaskModal = ({ open, onClose, onSave }) => {
           </div>
 
           <div>
-            <label className="text-sm font-medium">End Date / Deadline *</label>
+            <label htmlFor="task-deadline" className="text-sm font-medium">End Date / Deadline *</label>
             <input
+              id="task-deadline"
               type="date"
               name="deadline"
               onChange={handleChange}
@@ -106,8 +111,9 @@ const AddTaskModal = ({ open, onClose, onSave }) => {
         </div>
 
         <div className="mt-4">
-          <label className="text-sm font-medium">Task Description</label>
+          <label htmlFor="task-description" className="text-sm font-medium">Task Description</label>
           <textarea
+            id="task-description"
             name="description"
             placeholder="Write task details..."
             onChange={handleChange}
