@@ -41,6 +41,14 @@ const rolePermissions = {
     "profile:read", "profile:write",
     "attendance:write",
     "leaves:write",
+    // Payroll — view only (budget oversight)
+    "payroll:read",
+    // Projects — view only (resource planning)
+    "projects:read",
+    // Assets — view only (asset register)
+    "assets:read",
+    // Audit Logs — view only (compliance)
+    "audit-logs:read",
   ],
   hr: [
     // Employees — full CRUD
@@ -59,6 +67,8 @@ const rolePermissions = {
     "hr-management:read", "hr-management:write",
     // WFH — full CRUD
     "wfh:read", "wfh:write",
+    // Tasks — view (workload management)
+    "tasks:read",
     // Helpdesk — HR + employee tickets
     "helpdesk:read", "helpdesk:write",
     // Announcements — send + view
@@ -88,6 +98,10 @@ const rolePermissions = {
     "notifications:read",
     "settings:read",
     "policies:read",
+    // Own payslips
+    "payroll:read",
+    // Assigned projects only
+    "projects:read",
   ],
 };
 

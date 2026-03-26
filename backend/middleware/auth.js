@@ -5,40 +5,97 @@ const User = require("../models/User");
 const ROLE_PERMISSIONS = {
   superAdmin: ["*"],
   admin: [
-    "employees:create", "employees:read", "employees:update", "employees:delete",
-    "attendance:create", "attendance:read", "attendance:update", "attendance:delete",
-    "leaves:create",    "leaves:read",    "leaves:update",    "leaves:approve",
-    "projects:create",  "projects:read",  "projects:update",  "projects:delete",
-    "tasks:create",     "tasks:read",     "tasks:update",     "tasks:delete",
-    "assets:create",    "assets:read",    "assets:update",    "assets:delete",
-    "payroll:create",   "payroll:read",   "payroll:update",   "payroll:delete",
-    "reports:read",     "reports:generate",
+    // Employees — view only
+    "employees:read",
+    // Attendance — view + approve
+    "attendance:read", "attendance:create", "attendance:update",
+    // Leave — view + approve
+    "leaves:read", "leaves:approve",
+    // Payroll — view only (budget oversight)
+    "payroll:read",
+    // Projects — view only (resource planning)
+    "projects:read",
+    // Assets — view only (asset register)
+    "assets:read",
+    // Tasks — assign + view
+    "tasks:create", "tasks:read", "tasks:update", "tasks:delete",
+    // Reports — full
+    "reports:read", "reports:generate",
+    // Policies — full CRUD
+    "policies:read", "policies:create", "policies:update", "policies:delete",
+    // Inventory — full CRUD
+    "inventory:read", "inventory:create", "inventory:update", "inventory:delete",
+    // Announcements — create + view
     "announcements:create", "announcements:read", "announcements:delete",
+    // Role management — full CRUD
+    "roles:read", "roles:create", "roles:update", "roles:delete",
+    // Audit logs — view only
+    "audit-logs:read",
+    // Helpdesk — view + respond
+    "helpdesk:read", "helpdesk:update",
+    // WFH — view
+    "wfh:read",
+    // HR Management — view
+    "hr-management:read",
+    // Notifications + settings
     "notifications:read",
-    "settings:read",    "settings:update",
-    "users:read",       "users:update",
+    "settings:read", "settings:update",
+    "users:read", "users:update",
   ],
   hr: [
-    "employees:create", "employees:read", "employees:update",
-    "attendance:create","attendance:read","attendance:update",
-    "leaves:create",    "leaves:read",   "leaves:update",    "leaves:approve",
-    "payroll:create",   "payroll:read",  "payroll:update",
-    "reports:read",     "reports:generate",
-    "assets:read",
+    // Employees — full CRUD
+    "employees:create", "employees:read", "employees:update", "employees:delete",
+    // Attendance — full CRUD
+    "attendance:create", "attendance:read", "attendance:update",
+    // Leave — full CRUD + approve
+    "leaves:create", "leaves:read", "leaves:update", "leaves:approve",
+    // Payroll — full CRUD
+    "payroll:create", "payroll:read", "payroll:update",
+    // Projects — full CRUD
+    "projects:create", "projects:read", "projects:update", "projects:delete",
+    // Assets — full CRUD
+    "assets:create", "assets:read", "assets:update", "assets:delete",
+    // Tasks — view (workload management)
+    "tasks:read",
+    // HR Management — full
+    "hr-management:read", "hr-management:update",
+    // WFH — full CRUD
+    "wfh:create", "wfh:read", "wfh:update",
+    // Helpdesk — view + respond
+    "helpdesk:read", "helpdesk:update",
+    // Announcements — create + view
     "announcements:create", "announcements:read",
+    // Reports — view only
+    "reports:read",
+    // Policies — view only
+    "policies:read",
+    // Notifications + settings
     "notifications:read",
     "settings:read",
     "users:read",
   ],
   employee: [
-    "employees:read",
-    "attendance:read",  "attendance:create",
-    "leaves:create",    "leaves:read",
-    "tasks:read",       "tasks:update",
-    "projects:read",
-    "announcements:read",
-    "notifications:read",
+    // Own attendance
+    "attendance:read", "attendance:create",
+    // Own leave
+    "leaves:create", "leaves:read",
+    // Own tasks
+    "tasks:read", "tasks:update",
+    // Own payslips
     "payroll:read",
+    // Assigned projects
+    "projects:read",
+    // Helpdesk — own tickets
+    "helpdesk:read", "helpdesk:create",
+    // Announcements — view only
+    "announcements:read",
+    // WFH — own requests
+    "wfh:create", "wfh:read",
+    // Notifications + settings + policies
+    "notifications:read",
+    "settings:read",
+    "policies:read",
+    "employees:read",
   ],
 };
 

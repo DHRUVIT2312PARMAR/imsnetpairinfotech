@@ -141,7 +141,7 @@ const SuperAdminDashboard = () => {
 // Routes to the correct dashboard based on user role
 const RoleBasedDashboard = () => {
   const { user } = useAuth();
-  const role = user?.role?.toLowerCase() || "employee";
+  const role = (user?.role || "employee").toLowerCase().trim();
 
   if (role === "superadmin") return <SuperAdminDashboard />;
   if (role === "admin")      return <AdminDashboard />;

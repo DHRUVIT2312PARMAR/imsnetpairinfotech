@@ -13,10 +13,20 @@ const markRules = [
   body("status").isIn(["Present","Absent","WFH","Half Day"]).withMessage("Invalid status"),
 ];
 
-router.get("/dashboard-stats", ctrl.getDashboardStats);
-router.get("/weekly-data",     ctrl.getWeeklyData);
-router.get("/today",           ctrl.getToday);
-router.get("/records",         ctrl.getRecords);
+// Employee-only routes (own data)
+router.get("/my-today",   ctrl.getMyToday);
+router.get("/my-summary", ctrl.getMySummary);
+router.get("/my-history", ctrl.getMyHistory);
+router.post("/clock-in",  ctrl.clockIn);
+router.post("/clock-out", ctrl.clockOut);
+
+router.post("/regularization", ctrl.regularization);
+
+// HR/Admin routes
+router.get("/dashboard-stats", restrictTo("admin","hr","superAdmin"), ctrl.getDashboardStats);
+router.get("/weekly-data",     restrictTo("admin","hr","superAdmin"), ctrl.getWeeklyData);
+router.get("/today",           restrictTo("admin","hr","superAdmin"), ctrl.getToday);
+router.get("/records",         restrictTo("admin","hr","superAdmin"), ctrl.getRecords);
 router.post("/mark",           restrictTo("hr","admin","superAdmin"), markRules, validate, ctrl.markAttendance);
 
 module.exports = router;

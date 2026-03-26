@@ -28,7 +28,9 @@ const AdminDashboard = ({ advancedMode = false }) => {
   const role = user?.role?.toLowerCase() || "admin";
 
   const fetchStats = useCallback(() =>
-    api.get("/attendance/dashboard-stats").then(r => r.data.data), []);
+    api.get("/attendance/dashboard-stats")
+      .then(r => r.data.data)
+      .catch(() => null), []);
 
   const { data: liveStats, loading: statsLoading } = useApi(fetchStats, [], 60000);
 

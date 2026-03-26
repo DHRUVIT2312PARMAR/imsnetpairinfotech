@@ -25,16 +25,7 @@ const USERS = [
     lastName:      "Patel",
     role:          "admin",
     systemEmail:   "amit.patel.admin@netpair.com",
-    personalEmail: "amit@gmail.com",
-    password:      "Admin@1234",
-    mfaMethod:     "otp",
-  },
-  {
-    firstName:     "Mitesh",
-    lastName:      "Patel",
-    role:          "admin",
-    systemEmail:   "mitesh.patel.admin@netpair.com",
-    personalEmail: "mitesh@gmail.com",
+    personalEmail: "jeemmu237@gmail.com",
     password:      "Admin@1234",
     mfaMethod:     "otp",
   },
@@ -43,16 +34,7 @@ const USERS = [
     lastName:      "Prajapati",
     role:          "hr",
     systemEmail:   "rohit.prajapati.hr@netpair.com",
-    personalEmail: "rohit@gmail.com",
-    password:      "Hr@1234",
-    mfaMethod:     "otp",
-  },
-  {
-    firstName:     "Priya",
-    lastName:      "Desai",
-    role:          "hr",
-    systemEmail:   "priya.desai.hr@netpair.com",
-    personalEmail: "priya@gmail.com",
+    personalEmail: "jeemmu222@gmail.com",
     password:      "Hr@1234",
     mfaMethod:     "otp",
   },
@@ -61,7 +43,25 @@ const USERS = [
     lastName:      "Girase",
     role:          "employee",
     systemEmail:   "ashish.girase.employee@netpair.com",
-    personalEmail: "ashish@gmail.com",
+    personalEmail: "jeemmu444@gmail.com",
+    password:      "Employee@1234",
+    mfaMethod:     "otp",
+  },
+  {
+    firstName:     "Ravi",
+    lastName:      "Sharma",
+    role:          "employee",
+    systemEmail:   "ravi.sharma.employee@netpair.com",
+    personalEmail: "jeemmu111@gmail.com",
+    password:      "Employee@1234",
+    mfaMethod:     "otp",
+  },
+  {
+    firstName:     "Neha",
+    lastName:      "Patel",
+    role:          "employee",
+    systemEmail:   "neha.patel.employee@netpair.com",
+    personalEmail: "jeemmu333@gmail.com",
     password:      "Employee@1234",
     mfaMethod:     "otp",
   },
@@ -72,7 +72,8 @@ async function run() {
   await mongoose.connect(process.env.MONGODB_URI);
   console.log("Connected.\n");
 
-  const User = require("../models/User");
+  const User     = require("../models/User");
+  const Employee = require("../models/Employee");
 
   // Step 1 — Fix all existing unverified users
   const fixed = await User.updateMany(
@@ -91,14 +92,16 @@ async function run() {
     const hash     = await bcrypt.hash(u.password, 12);
     const existing = await User.findOne({ systemEmail: u.systemEmail });
 
+    let userDoc;
     if (existing) {
       await User.findOneAndUpdate(
         { _id: existing._id },
         { $set: { password: hash, isVerified: true, isActive: true, mfaMethod: u.mfaMethod, personalEmail: u.personalEmail } }
       );
+      userDoc = existing;
       console.log("UPDATED:", u.systemEmail.padEnd(52), "→", u.password);
     } else {
-      await User.create({
+      userDoc = await User.create({
         firstName:     u.firstName,
         lastName:      u.lastName,
         role:          u.role,
@@ -112,6 +115,38 @@ async function run() {
         isActive:      true,
       });
       console.log("CREATED:", u.systemEmail.padEnd(52), "→", u.password);
+    }
+
+    // Step 2b — Ensure Employee record exists for employee/hr/admin roles
+    if (["employee", "hr", "admin", "superAdmin"].includes(u.role)) {
+      const empExists = await Employee.findOne({ userId: userDoc._id });
+      if (!empExists) {
+        const deptMap = {
+          superAdmin: "Management",
+          admin:      "Administration",
+          hr:         "Human Resources",
+          employee:   "Engineering",
+        };
+        const desigMap = {
+          superAdmin: "Super Administrator",
+          admin:      "Administrator",
+          hr:         "HR Manager",
+          employee:   "Software Engineer",
+        };
+        await Employee.create({
+          userId:      userDoc._id,
+          firstName:   u.firstName,
+          lastName:    u.lastName,
+          email:       u.systemEmail,
+          department:  deptMap[u.role] || "General",
+          designation: desigMap[u.role] || "Employee",
+          status:      "active",
+          joiningDate: new Date("2024-01-01"),
+        });
+        console.log("  → Employee record created for", u.firstName, u.lastName);
+      } else {
+        console.log("  → Employee record already exists for", u.firstName, u.lastName);
+      }
     }
   }
 

@@ -61,9 +61,9 @@ const Employees = () => {
   };
 
   const stats = [
-    { label: "Total",    value: total,                                                          color: "from-blue-500 to-indigo-600",   icon: "ri-team-line" },
-    { label: "Active",   value: employees.filter(e => e.status?.current === "active").length,   color: "from-green-500 to-emerald-600", icon: "ri-user-follow-line" },
-    { label: "Inactive", value: employees.filter(e => e.status?.current !== "active").length,   color: "from-orange-500 to-red-500",    icon: "ri-user-unfollow-line" },
+    { label: "Total",    value: total,                                                    color: "from-blue-500 to-indigo-600",   icon: "ri-team-line" },
+    { label: "Active",   value: employees.filter(e => e.status === "active").length,     color: "from-green-500 to-emerald-600", icon: "ri-user-follow-line" },
+    { label: "Inactive", value: employees.filter(e => e.status !== "active").length,     color: "from-orange-500 to-red-500",    icon: "ri-user-unfollow-line" },
   ];
 
   return (

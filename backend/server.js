@@ -83,6 +83,13 @@ app.use("/api/v1/employees",     require("./routes/employees"));
 app.use("/api/v1/attendance",    require("./routes/attendance"));
 app.use("/api/v1/leaves",        require("./routes/leaves"));
 app.use("/api/v1/notifications", require("./routes/notifications"));
+app.use("/api/v1/announcements", require("./routes/announcements"));
+app.use("/api/v1/wfh",           require("./routes/wfh"));
+app.use("/api/v1/payroll",       require("./routes/payroll"));
+app.use("/api/v1/assets",        require("./routes/assets"));
+app.use("/api/v1/projects",      require("./routes/projects"));
+app.use("/api/v1/tasks",         require("./routes/tasks"));
+app.use("/api/v1/tickets",       require("./routes/tickets"));
 
 // Health check
 app.get("/health", (req, res) =>

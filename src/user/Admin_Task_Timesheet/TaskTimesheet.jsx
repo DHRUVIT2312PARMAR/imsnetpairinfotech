@@ -3,7 +3,7 @@ import TimesheetCards from "../../components/Task_Timesheet/TimesheetCards";
 import TimesheetFilters from "../../components/Task_Timesheet/TimesheetFilters";
 import TimesheetTable from "../../components/Task_Timesheet/TimesheetTable";
 import AddTaskModal from "../../components/Task_Timesheet/AddTaskBtnModel";
-import TimesheetData from "../../components/Task_Timesheet/TimesheetData";
+import TimesheetData from "../../components/Task_Timesheet/timesheetData";
 
 const TaskTimesheet = () => {
   const [isLoading, setIsLoading] = useState(false);

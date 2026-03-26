@@ -15,22 +15,23 @@ const allNavItems = [
   { navpath: "announcements",        icon: "ri-megaphone-line",              data: "Announcements",    roles: null },
   { navpath: "settings",             icon: "ri-equalizer-line",              data: "Settings",         roles: null },
   { navpath: "policies",             icon: "ri-file-list-line",              data: "Policies",         roles: null },
-  // Employee + Admin + SuperAdmin (HR does NOT have tasks-timesheet)
-  { navpath: "tasktimesheet",        icon: "ri-task-line",                   data: "Tasks-Timesheet",  roles: ["employee","admin","superadmin"] },
+  // Employee + Admin + SuperAdmin + HR (all roles with tasks)
+  { navpath: "tasktimesheet",        icon: "ri-task-line",                   data: "Tasks-Timesheet",  roles: ["employee","hr","admin","superadmin"] },
   // HR + Admin + SuperAdmin
   { navpath: "employees",            icon: "ri-user-2-line",                 data: "Employees",        roles: ["hr","admin","superadmin"] },
   { navpath: "hr-management",        icon: "ri-user-settings-line",          data: "HR Management",    roles: ["hr","admin","superadmin"] },
   { navpath: "wfh",                  icon: "ri-home-office-line",            data: "WFH Records",      roles: ["hr","admin","superadmin"] },
-  // HR + SuperAdmin only (v2.1: Admin removed)
-  { navpath: "payroll",              icon: "ri-money-dollar-circle-line",    data: "Payroll",          roles: ["hr","superadmin"] },
-  { navpath: "projects",             icon: "ri-folder-line",                 data: "Projects",         roles: ["hr","superadmin"] },
-  { navpath: "assets",               icon: "ri-archive-stack-line",          data: "Assets",           roles: ["hr","superadmin"] },
+  // HR + Admin + SuperAdmin (Admin: read-only view for oversight)
+  { navpath: "payroll",              icon: "ri-money-dollar-circle-line",    data: "Payroll",          roles: ["employee","hr","admin","superadmin"] },
+  { navpath: "projects",             icon: "ri-folder-line",                 data: "Projects",         roles: ["employee","hr","admin","superadmin"] },
+  { navpath: "assets",               icon: "ri-archive-stack-line",          data: "Assets",           roles: ["hr","admin","superadmin"] },
   // Admin + SuperAdmin
   { navpath: "reports",              icon: "ri-bar-chart-line",              data: "Reports",          roles: ["admin","superadmin"] },
   { navpath: "inventory",            icon: "ri-store-line",                  data: "Inventory",        roles: ["admin","superadmin"] },
   { navpath: "role-management",      icon: "ri-shield-user-line",            data: "Role Management",  roles: ["admin","superadmin"] },
+  // Admin + SuperAdmin (Admin: view only, SuperAdmin: full)
+  { navpath: "audit-logs",           icon: "ri-file-history-line",           data: "Audit Logs",       roles: ["admin","superadmin"] },
   // SuperAdmin only
-  { navpath: "audit-logs",           icon: "ri-file-history-line",           data: "Audit Logs",       roles: ["superadmin"] },
   { navpath: "system-configuration", icon: "ri-settings-4-line",             data: "System Config",    roles: ["superadmin"] },
 ];
 
