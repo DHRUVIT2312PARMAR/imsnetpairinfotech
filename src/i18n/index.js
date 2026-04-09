@@ -155,5 +155,5 @@ export const timeAgo = (dateStr, lang = 'en') => {
   return `${Math.floor(diff / 86400)} ${translate(lang, 'time.day_ago')}`;
 };
 
-export { LANGUAGES, translate as t };
+export { translate as t };
 export default translate;
