@@ -68,7 +68,7 @@ const Sidebar = () => {
         <div className="h-15 flex items-center justify-between border-b border-gray-300 px-2 relative">
           {!collapsed && (
             <img
-              src="src/assets/imgs/image-removebg-preview.png"
+              src="/logo.png"
               className="h-10 px-1"
               alt="logo"
             />

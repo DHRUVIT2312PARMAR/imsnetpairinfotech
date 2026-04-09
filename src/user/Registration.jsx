@@ -27,10 +27,10 @@ const Registration = () => {
      <div className="flex justify-center shadow-xl/30 rounded-2xl bg-white">
      
      <div className="h-175 overflow-hidden rounded-l-2xl">
-        <img className="object-fit-contain" src="src\assets\imgs\img1.jpg" alt="" />
+        <img className="object-fit-contain" src="/img1.jpg" alt="" />
       </div>
        <div className=" rounded-l-2xl w-150 py-25 mt-10 flex justify-center">
-        <img  src="src\assets\imgs\logo.png" className="h-25 w-75 absolute top-15 rounded-xl" alt="" />
+        <img  src="/logo.png" className="h-25 w-75 absolute top-15 rounded-xl" alt="" />
 
         <Rform/>
         

@@ -1,9 +1,3 @@
-# Environment variables (never commit secrets)
-.env
-.env.*
-backend/.env
-backend/.env.*
-
 # Logs
 logs
 *.log
@@ -28,3 +22,13 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment variables
+.env
+.env.local
+.env.production
+backend/.env
+
+# Deployment guides with secrets
+RENDER_DEPLOYMENT_GUIDE.md
+RENDER_SETUP_STEPS.md
