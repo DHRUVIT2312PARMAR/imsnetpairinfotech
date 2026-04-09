@@ -16,7 +16,7 @@ const SidebarLogo = ({ collapsed }) => (
     <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center
       bg-gradient-to-br from-orange-400 to-amber-500 shrink-0 shadow-sm">
       <img
-        src="/src/assets/imgs/logo.png"
+        src="/logo.png"
         alt="Netpair"
         className="w-7 h-7 object-contain"
         onError={(e) => {

@@ -12,7 +12,7 @@ const AuthLayout = ({ children }) => {
           
      
           <img
-            src="/src/assets/imgs/logo.png"
+            src="/logo.png"
             alt="Company Logo"
             className="h-16 mb-8"
           />
@@ -25,7 +25,7 @@ const AuthLayout = ({ children }) => {
 
         <div className="hidden md:block md:w-1/2">
           <img
-            src="/src/assets/imgs/img1.jpg"
+            src="/img1.jpg"
             alt="Auth Illustration"
             className="h-full w-full object-fill"
           />

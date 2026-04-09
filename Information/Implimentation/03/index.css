@@ -1,0 +1,42 @@
+/* src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Keyframes for dropdown animation ──────────────────────── */
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Smooth dark mode transitions on ALL elements ────────────
+   Only transition bg/border/color so layout doesn't animate   */
+@layer base {
+  *, *::before, *::after {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-duration: 200ms;
+    transition-timing-function: ease;
+  }
+
+  /* Exception: don't transition transform (breaks animations) */
+  [class*="translate-"], [class*="rotate-"], [class*="scale-"] {
+    transition-property: transform;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ── Scrollbar ─────────────────────────────────────────── */
+  ::-webkit-scrollbar       { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 9999px; }
+  .dark ::-webkit-scrollbar-thumb { background: #374151; }
+}
+
+/* ── Tailwind config note ────────────────────────────────────
+   Make sure tailwind.config.js has:
+     darkMode: 'class'
+   and the keyframes / animation entries shown below.
+   ─────────────────────────────────────────────────────────── */
