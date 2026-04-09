@@ -4,28 +4,31 @@ import { BrowserRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../src/style.css";
-import "./i18n/index.js";
 import App from "./App.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
-import { ThemeProvider } from "./context/ThemeContext.jsx";
+import { ThemeLanguageProvider } from "./context/ThemeLanguageContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <BrowserRouter>
-      <ThemeProvider>
-        <AuthProvider>
+    {/* ① ThemeLanguage — OUTERMOST: theme + lang available everywhere */}
+    <ThemeLanguageProvider>
+      {/* ② Auth — next layer */}
+      <AuthProvider>
+        {/* ③ Router */}
+        <BrowserRouter>
           <App />
+          {/* Toast uses same dark/light via CSS variables set on <html> */}
           <ToastContainer
             position="top-right"
-            autoClose={3000}
+            autoClose={3500}
             hideProgressBar={false}
             newestOnTop
             closeOnClick
             pauseOnHover
-            theme="light"
+            theme="colored"
           />
-        </AuthProvider>
-      </ThemeProvider>
-    </BrowserRouter>
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeLanguageProvider>
   </StrictMode>
 );
