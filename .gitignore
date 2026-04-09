@@ -23,12 +23,11 @@ dist-ssr
 *.sln
 *.sw?
 
-# Environment variables
+# Environment variables with secrets
 .env
 .env.local
-.env.production
 backend/.env
 
-# Deployment guides with secrets
-RENDER_DEPLOYMENT_GUIDE.md
-RENDER_SETUP_STEPS.md
+# Production config files are OK to commit (no secrets)
+!.env.production
+!.env.development

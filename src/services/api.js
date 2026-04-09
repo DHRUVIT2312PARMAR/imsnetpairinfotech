@@ -1,8 +1,24 @@
 import axios from "axios";
 
+// Production backend URL (Render) or local development
+const getBaseURL = () => {
+  // If VITE_API_BASE_URL is set (from .env), use it
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+  
+  // Production: use Render backend
+  if (import.meta.env.PROD) {
+    return "https://imsnetpairinfotech.onrender.com/api/v1";
+  }
+  
+  // Development: use local backend
+  return "http://localhost:3000/api/v1";
+};
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api/v1",
-  timeout: 10000,
+  baseURL: getBaseURL(),
+  timeout: 30000, // Increased timeout for Render cold starts
   withCredentials: true, // send httpOnly cookie on every request
 });
 
