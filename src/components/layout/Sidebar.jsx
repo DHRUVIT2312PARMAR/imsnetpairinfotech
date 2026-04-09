@@ -13,16 +13,15 @@ const SidebarLogo = ({ collapsed }) => (
     ${collapsed ? 'px-3 justify-center' : 'px-4'}`}>
 
     {/* Logo mark */}
-    <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center
-      bg-gradient-to-br from-orange-400 to-amber-500 shrink-0 shadow-sm">
+    <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center shrink-0">
       <img
         src="/logo.png"
         alt="Netpair"
-        className="w-7 h-7 object-contain"
+        className="w-8 h-8 object-contain"
         onError={(e) => {
           e.currentTarget.style.display = 'none';
           e.currentTarget.parentElement.innerHTML =
-            `<span style="font-weight:800;font-size:11px;color:white;letter-spacing:-0.5px">NP</span>`;
+            `<span style="font-weight:800;font-size:11px;color:#f97316;letter-spacing:-0.5px">NP</span>`;
         }}
       />
     </div>
