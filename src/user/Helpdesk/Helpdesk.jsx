@@ -25,7 +25,7 @@ const Helpdesk = () => {
     setLoading(true);
     try {
       const { data } = await api.get("/tickets?limit=50&sortBy=createdAt&order=desc");
-      setTickets(data.data?.records || data.data || []);
+      setTickets(data.data?.data || []);
     } catch { toast.error("Failed to load tickets"); }
     finally { setLoading(false); }
   }, []);

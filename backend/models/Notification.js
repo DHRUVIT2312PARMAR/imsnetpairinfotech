@@ -6,6 +6,7 @@ const notificationSchema = new mongoose.Schema(
     type:    { type: String, enum: ["leave","attendance","task","payroll","policy","system","announcement","Leave","Attendance","Task","Payroll","System","Announcement"], default: "system" },
     title:   { type: String, required: true },
     message: { type: String, required: true },
+    icon:    { type: String, default: "ri-notification-3-line" },
     isRead:  { type: Boolean, default: false, index: true },
     link:    { type: String, default: "" },
     metadata: { type: Object },

@@ -150,7 +150,7 @@ exports.register = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("REGISTER ERROR:", err.message);
+    if (process.env.NODE_ENV !== "production") console.error("REGISTER ERROR:", err.message);
     respond(res, 500, err.message);
   }
 };
@@ -207,7 +207,7 @@ exports.setupMfa = async (req, res) => {
 
     respond(res, 200, "Account verified successfully. You can now log in.", {});
   } catch (err) {
-    console.error("SETUP-MFA ERROR:", err.message);
+    if (process.env.NODE_ENV !== "production") console.error("SETUP-MFA ERROR:", err.message);
     respond(res, 500, err.message);
   }
 };
@@ -260,7 +260,7 @@ exports.resendOtp = async (req, res) => {
 
     respond(res, 200, "New verification code sent to your email.");
   } catch (err) {
-    console.error("RESEND-OTP ERROR:", err.message);
+    if (process.env.NODE_ENV !== "production") console.error("RESEND-OTP ERROR:", err.message);
     respond(res, 500, err.message);
   }
 };
@@ -281,15 +281,6 @@ exports.login = async (req, res) => {
       ],
     }).select("+password +totpSecret");
 
-    // Debug logs — remove before production
-    console.log("[LOGIN] Email:", systemEmail);
-    console.log("[LOGIN] User found:", user ? "YES" : "NO");
-    if (user) {
-      console.log("[LOGIN] isVerified:", user.isVerified);
-      console.log("[LOGIN] isActive:  ", user.isActive);
-      console.log("[LOGIN] mfaMethod: ", user.mfaMethod);
-    }
-
     if (!user)
       return respond(res, 401, "Invalid email or password");
 
@@ -305,7 +296,6 @@ exports.login = async (req, res) => {
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
-    console.log("[LOGIN] Password match:", passwordMatch);
 
     if (!passwordMatch)
       return respond(res, 401, "Invalid email or password");
@@ -326,7 +316,7 @@ exports.login = async (req, res) => {
         });
         await sendOTP(user.personalEmail, user.firstName, otp, "login");
       } catch (otpErr) {
-        console.error("[LOGIN] OTP send error:", otpErr.message);
+        if (process.env.NODE_ENV !== "production") console.error("[LOGIN] OTP send error:", otpErr.message);
         // Continue — don't block login if email fails
       }
     }
@@ -350,7 +340,7 @@ exports.login = async (req, res) => {
       { mfaRequired: true, mfaMethod: user.mfaMethod, tempToken, maskedEmail }
     );
   } catch (err) {
-    console.error("[LOGIN] ERROR:", err.message);
+    if (process.env.NODE_ENV !== "production") console.error("[LOGIN] ERROR:", err.message);
     respond(res, 500, "Login failed. Please try again.");
   }
 };
@@ -413,7 +403,7 @@ exports.verifyMfa = async (req, res) => {
 
     respond(res, 200, "Login successful", { user: safeUser(user) });
   } catch (err) {
-    console.error("VERIFY-MFA ERROR:", err.message);
+    if (process.env.NODE_ENV !== "production") console.error("VERIFY-MFA ERROR:", err.message);
     respond(res, 500, err.message);
   }
 };
@@ -506,7 +496,7 @@ exports.updateProfile = async (req, res) => {
 
     respond(res, 200, "Profile updated successfully", safeUser(updated));
   } catch (err) {
-    console.error("UPDATE-PROFILE ERROR:", err.message);
+    if (process.env.NODE_ENV !== "production") console.error("UPDATE-PROFILE ERROR:", err.message);
     respond(res, 500, err.message);
   }
 };
@@ -531,7 +521,7 @@ exports.changePassword = async (req, res) => {
 
     respond(res, 200, "Password changed successfully");
   } catch (err) {
-    console.error("CHANGE-PASSWORD ERROR:", err.message);
+    if (process.env.NODE_ENV !== "production") console.error("CHANGE-PASSWORD ERROR:", err.message);
     respond(res, 500, err.message);
   }
 };

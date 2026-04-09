@@ -10,6 +10,8 @@ const { Server }   = require("socket.io");
 const connectDB    = require("./config/db");
 const notificationHandler = require("./socket/notificationHandler");
 
+const mongoSanitize = require("express-mongo-sanitize");
+
 const app    = express();
 const server = http.createServer(app);
 
@@ -52,6 +54,9 @@ app.use(express.urlencoded({ extended: true }));
 // Cookie parser
 app.use(cookieParser());
 
+// NoSQL injection protection
+app.use(mongoSanitize());
+
 // Logger (dev only)
 if (process.env.NODE_ENV === "development") app.use(morgan("dev"));
 
@@ -60,6 +65,15 @@ const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,
   message: { success: false, message: "Too many requests, please try again later" },
+});
+
+// Global rate limiter — all API routes
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: "Too many requests, please slow down" },
 });
 
 // Preload all models so indexes are created on startup
@@ -76,8 +90,13 @@ require("./models/Announcement");
 require("./models/WFHRequest");
 require("./models/Ticket");
 require("./models/OTPToken");
+require("./models/Policy");
+require("./models/InventoryItem");
+require("./models/AuditLog");
+require("./models/SystemConfig");
 
 // Routes
+app.use("/api/v1", globalLimiter);
 app.use("/api/v1/auth",          authLimiter, require("./routes/auth"));
 app.use("/api/v1/employees",     require("./routes/employees"));
 app.use("/api/v1/attendance",    require("./routes/attendance"));
@@ -90,6 +109,11 @@ app.use("/api/v1/assets",        require("./routes/assets"));
 app.use("/api/v1/projects",      require("./routes/projects"));
 app.use("/api/v1/tasks",         require("./routes/tasks"));
 app.use("/api/v1/tickets",       require("./routes/tickets"));
+app.use("/api/v1/policies",      require("./routes/policies"));
+app.use("/api/v1/inventory",     require("./routes/inventory"));
+app.use("/api/v1/audit-logs",    require("./routes/auditLogs"));
+app.use("/api/v1/system-config", require("./routes/systemConfig"));
+app.use("/api/v1/reports",       require("./routes/reports"));
 
 // Health check
 app.get("/health", (req, res) =>

@@ -27,7 +27,7 @@ const WFH = () => {
     setLoading(true);
     try {
       const { data } = await api.get("/wfh?limit=50&sortBy=createdAt&order=desc");
-      setRecords(data.data?.records || data.data || []);
+      setRecords(data.data?.data || []);
     } catch { toast.error("Failed to load WFH records"); }
     finally { setLoading(false); }
   }, []);

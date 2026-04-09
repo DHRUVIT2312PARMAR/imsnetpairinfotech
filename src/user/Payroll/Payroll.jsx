@@ -31,7 +31,7 @@ const Payroll = () => {
     setLoading(true);
     try {
       const { data } = await api.get("/payroll?limit=100&sortBy=createdAt&order=desc");
-      setRecords(data.data?.records || data.data || []);
+      setRecords(data.data?.data || []);
     } catch { toast.error("Failed to load payroll"); }
     finally { setLoading(false); }
   }, []);
@@ -40,7 +40,7 @@ const Payroll = () => {
     fetchAll();
     if (canManage) {
       api.get("/employees?limit=100").then(({ data }) => {
-        setEmployees(data.data?.records || data.data || []);
+        setEmployees(data.data?.data || []);
       }).catch(() => {});
     }
   }, [fetchAll, canManage]);

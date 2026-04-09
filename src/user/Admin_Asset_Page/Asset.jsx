@@ -21,7 +21,7 @@ const Asset = () => {
     setLoading(true);
     try {
       const { data } = await api.get("/assets?limit=100");
-      setAssets(data.data?.records || data.data || []);
+      setAssets(data.data?.data || []);
     } catch { toast.error("Failed to load assets"); }
     finally { setLoading(false); }
   }, []);

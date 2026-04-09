@@ -1,18 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
-
-const initialItems = [
-  { id: 1,  name: "A4 Paper Reams",      category: "Stationery", qty: 50,  minQty: 20, location: "Store Room A", unit: "Reams" },
-  { id: 2,  name: "Ballpoint Pens",       category: "Stationery", qty: 8,   minQty: 30, location: "Store Room A", unit: "Box" },
-  { id: 3,  name: "HDMI Cables",          category: "IT",         qty: 15,  minQty: 5,  location: "IT Rack",      unit: "Pcs" },
-  { id: 4,  name: "USB-C Hubs",           category: "IT",         qty: 3,   minQty: 5,  location: "IT Rack",      unit: "Pcs" },
-  { id: 5,  name: "Printer Ink (Black)",  category: "IT",         qty: 6,   minQty: 4,  location: "IT Rack",      unit: "Cartridge" },
-  { id: 6,  name: "Whiteboard Markers",   category: "Stationery", qty: 12,  minQty: 10, location: "Conference",   unit: "Box" },
-  { id: 7,  name: "Sanitizer Bottles",    category: "Hygiene",    qty: 2,   minQty: 10, location: "Reception",    unit: "Bottles" },
-  { id: 8,  name: "Coffee Sachets",       category: "Pantry",     qty: 100, minQty: 50, location: "Pantry",       unit: "Sachets" },
-  { id: 9,  name: "Ethernet Cables 5m",   category: "IT",         qty: 20,  minQty: 8,  location: "IT Rack",      unit: "Pcs" },
-  { id: 10, name: "Sticky Notes",         category: "Stationery", qty: 25,  minQty: 15, location: "Store Room A", unit: "Pads" },
-];
+import api from "../../services/api";
 
 const emptyForm = { name: "", category: "IT", qty: "", minQty: "", location: "", unit: "Pcs" };
 
@@ -24,47 +12,68 @@ const categoryStyle = (c) => ({
 }[c] || "bg-gray-100 text-gray-600");
 
 const Inventory = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [items, setItems]       = useState(initialItems);
+  const [items, setItems]       = useState([]);
+  const [loading, setLoading]   = useState(true);
   const [open, setOpen]         = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [form, setForm]         = useState(emptyForm);
   const [search, setSearch]     = useState("");
   const [filter, setFilter]     = useState("All");
   const [stockFilter, setStockFilter] = useState("All");
+  const [saving, setSaving]     = useState(false);
+
+  const fetchAll = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { data } = await api.get("/inventory?limit=200&sortBy=name");
+      setItems(data.data?.data || []);
+    } catch { toast.error("Failed to load inventory"); }
+    finally { setLoading(false); }
+  }, []);
+
+  useEffect(() => { fetchAll(); }, [fetchAll]);
 
   const lowStock = items.filter(i => i.qty <= i.minQty);
 
   const filtered = items.filter(i => {
-    const matchSearch = i.name.toLowerCase().includes(search.toLowerCase());
+    const matchSearch = (i.name || "").toLowerCase().includes(search.toLowerCase());
     const matchCat    = filter === "All" || i.category === filter;
     const matchStock  = stockFilter === "All" || (stockFilter === "Low" && i.qty <= i.minQty) || (stockFilter === "OK" && i.qty > i.minQty);
     return matchSearch && matchCat && matchStock;
   });
 
-  const openAdd = () => { setEditItem(null); setForm(emptyForm); setOpen(true); };
-  const openEdit = (item) => { setEditItem(item); setForm({ ...item }); setOpen(true); };
-
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.name || !form.qty || !form.location) return toast.error("Fill all required fields");
-    if (editItem) {
-      setItems(prev => prev.map(i => i.id === editItem.id ? { ...i, ...form, qty: +form.qty, minQty: +form.minQty } : i));
-      toast.success("Item updated");
-    } else {
-      setItems(prev => [{ id: Date.now(), ...form, qty: +form.qty, minQty: +form.minQty || 0 }, ...prev]);
-      toast.success("Item added");
-    }
-    setOpen(false);
+    setSaving(true);
+    try {
+      if (editItem) {
+        const { data } = await api.put(`/inventory/${editItem._id}`, { ...form, qty: +form.qty, minQty: +form.minQty || 0 });
+        setItems(prev => prev.map(i => i._id === editItem._id ? data.data : i));
+        toast.success("Item updated");
+      } else {
+        const { data } = await api.post("/inventory", { ...form, qty: +form.qty, minQty: +form.minQty || 0 });
+        setItems(prev => [data.data, ...prev]);
+        toast.success("Item added");
+      }
+      setOpen(false); setEditItem(null);
+    } catch (err) { toast.error(err.response?.data?.message || "Failed"); }
+    finally { setSaving(false); }
   };
 
-  const handleDelete = (id) => {
-    setItems(prev => prev.filter(i => i.id !== id));
-    toast.success("Item removed");
+  const handleDelete = async (id) => {
+    try {
+      await api.delete(`/inventory/${id}`);
+      setItems(prev => prev.filter(i => i._id !== id));
+      toast.success("Item removed");
+    } catch { toast.error("Failed to delete"); }
   };
 
-  const handleStockIn = (id, amount) => {
-    setItems(prev => prev.map(i => i.id === id ? { ...i, qty: i.qty + amount } : i));
-    toast.success(`Stock updated`);
+  const handleStockIn = async (id) => {
+    try {
+      const { data } = await api.post(`/inventory/${id}/stock-in`, { amount: 10 });
+      setItems(prev => prev.map(i => i._id === id ? data.data : i));
+      toast.success("Stock updated +10");
+    } catch { toast.error("Failed"); }
   };
 
   return (
@@ -72,12 +81,12 @@ const Inventory = () => {
 
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <h1 className="text-2xl font-semibold">Inventory</h1>
-        <button onClick={openAdd} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition text-sm">
+        <button onClick={() => { setEditItem(null); setForm(emptyForm); setOpen(true); }}
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition text-sm">
           <i className="ri-add-line"></i> Add Item
         </button>
       </div>
 
-      {/* Stat Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
           { label: "Total Items",  value: items.length,                                          color: "from-blue-500 to-indigo-600",   icon: "ri-store-line" },
@@ -94,7 +103,6 @@ const Inventory = () => {
         ))}
       </div>
 
-      {/* Low Stock Alert */}
       {lowStock.length > 0 && (
         <div className="bg-red-50 border border-red-200 rounded-2xl p-4">
           <p className="text-sm font-semibold text-red-800 mb-2 flex items-center gap-2">
@@ -102,7 +110,7 @@ const Inventory = () => {
           </p>
           <div className="flex flex-wrap gap-2">
             {lowStock.map(i => (
-              <span key={i.id} className="text-xs bg-red-100 text-red-700 px-3 py-1 rounded-full font-medium">
+              <span key={i._id} className="text-xs bg-red-100 text-red-700 px-3 py-1 rounded-full font-medium">
                 {i.name} — {i.qty} {i.unit} left
               </span>
             ))}
@@ -110,7 +118,6 @@ const Inventory = () => {
         </div>
       )}
 
-      {/* Filters */}
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 flex flex-col sm:flex-row gap-3 flex-wrap">
         <input type="text" placeholder="Search items..." value={search} onChange={e => setSearch(e.target.value)}
           className="flex-1 min-w-[160px] border border-gray-300 p-2.5 rounded-lg outline-none focus:border-blue-500 text-sm" />
@@ -127,7 +134,6 @@ const Inventory = () => {
           className="border border-gray-300 text-gray-600 px-4 py-2.5 rounded-lg hover:bg-gray-50 text-sm">Reset</button>
       </div>
 
-      {/* Table */}
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-x-auto">
         <table className="w-full min-w-[750px]">
           <thead className="bg-gray-50 text-gray-600 text-sm">
@@ -142,18 +148,18 @@ const Inventory = () => {
             </tr>
           </thead>
           <tbody className="text-sm">
-            {isLoading
-              ? Array.from({ length: 5 }).map((_, i) => (
-                  <tr key={i} className="border-t animate-pulse">
-                    {Array.from({ length: 7 }).map((_, j) => (
-                      <td key={j} className="px-4 py-3"><div className="h-3 bg-gray-200 rounded w-full"></div></td>
-                    ))}
-                  </tr>
-                ))
-              : filtered.map(item => {
+            {loading ? Array.from({ length: 5 }).map((_, i) => (
+              <tr key={i} className="border-t animate-pulse">
+                {Array.from({ length: 7 }).map((_, j) => <td key={j} className="px-4 py-3"><div className="h-3 bg-gray-200 rounded w-full"></div></td>)}
+              </tr>
+            )) : filtered.length === 0 ? (
+              <tr><td colSpan={7} className="px-6 py-12 text-center text-gray-400 text-sm">
+                No items found. Add your first inventory item.
+              </td></tr>
+            ) : filtered.map(item => {
               const isLow = item.qty <= item.minQty;
               return (
-                <tr key={item.id} className={`border-t transition ${isLow ? "bg-red-50/30 hover:bg-red-50/50" : "hover:bg-blue-50/40"}`}>
+                <tr key={item._id} className={`border-t transition ${isLow ? "bg-red-50/30 hover:bg-red-50/50" : "hover:bg-blue-50/40"}`}>
                   <td className="px-6 py-4 font-medium">{item.name}</td>
                   <td className="px-6 py-4 text-center">
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${categoryStyle(item.category)}`}>{item.category}</span>
@@ -168,13 +174,14 @@ const Inventory = () => {
                   </td>
                   <td className="px-6 py-4 text-center">
                     <div className="flex justify-center gap-1">
-                      <button onClick={() => handleStockIn(item.id, 10)} className="p-2 rounded-lg hover:bg-green-50" title="Add 10 units">
+                      <button onClick={() => handleStockIn(item._id)} className="p-2 rounded-lg hover:bg-green-50" title="Add 10 units">
                         <i className="ri-add-circle-line text-green-600 text-lg"></i>
                       </button>
-                      <button onClick={() => openEdit(item)} className="p-2 rounded-lg hover:bg-blue-50" title="Edit">
+                      <button onClick={() => { setEditItem(item); setForm({ name: item.name, category: item.category, qty: item.qty, minQty: item.minQty, location: item.location, unit: item.unit }); setOpen(true); }}
+                        className="p-2 rounded-lg hover:bg-blue-50" title="Edit">
                         <i className="ri-edit-line text-blue-600 text-lg"></i>
                       </button>
-                      <button onClick={() => handleDelete(item.id)} className="p-2 rounded-lg hover:bg-red-50" title="Delete">
+                      <button onClick={() => handleDelete(item._id)} className="p-2 rounded-lg hover:bg-red-50" title="Delete">
                         <i className="ri-delete-bin-line text-red-500 text-lg"></i>
                       </button>
                     </div>
@@ -182,14 +189,10 @@ const Inventory = () => {
                 </tr>
               );
             })}
-            {filtered.length === 0 && (
-              <tr><td colSpan={7} className="px-6 py-12 text-center text-gray-400 text-sm">No items found</td></tr>
-            )}
           </tbody>
         </table>
       </div>
 
-      {/* Add/Edit Modal */}
       {open && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl">
@@ -237,7 +240,9 @@ const Inventory = () => {
             </div>
             <div className="flex gap-3 mt-6">
               <button onClick={() => setOpen(false)} className="flex-1 py-2.5 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">Cancel</button>
-              <button onClick={handleSave} className="flex-1 py-2.5 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition">
+              <button onClick={handleSave} disabled={saving}
+                className="flex-1 py-2.5 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition disabled:opacity-50 flex items-center justify-center gap-2">
+                {saving && <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>}
                 {editItem ? "Update" : "Add Item"}
               </button>
             </div>

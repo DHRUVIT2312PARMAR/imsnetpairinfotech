@@ -29,4 +29,8 @@ router.get("/today",           restrictTo("admin","hr","superAdmin"), ctrl.getTo
 router.get("/records",         restrictTo("admin","hr","superAdmin"), ctrl.getRecords);
 router.post("/mark",           restrictTo("hr","admin","superAdmin"), markRules, validate, ctrl.markAttendance);
 
+// Badge count endpoint
+const { getAttendancePendingCount } = require('../controllers/notificationController');
+router.get("/pending-count", getAttendancePendingCount);
+
 module.exports = router;

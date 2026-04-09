@@ -20,4 +20,8 @@ router.post("/",                   leaveRules, validate, ctrl.applyLeave);
 router.put("/:id/approve",         restrictTo("hr","admin","superAdmin"), ctrl.approveLeave);
 router.put("/:id/reject",          restrictTo("hr","admin","superAdmin"), ctrl.rejectLeave);
 
+// Badge count endpoint
+const { getLeavePendingCount } = require('../controllers/notificationController');
+router.get("/pending-count", getLeavePendingCount);
+
 module.exports = router;

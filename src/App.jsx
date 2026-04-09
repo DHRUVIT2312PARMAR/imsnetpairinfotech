@@ -4,7 +4,7 @@ import AuthLayout from "./user/AuthLayout";
 import Lform from "./components/Login/Lform";
 import Rform from "./components/Registration/Rform";
 import Fform from "./components/Forgot/Fform";
-import Home from "./user/Home/Home";
+import Layout from "./components/layout/Layout";
 import Dashboard from "./user/Dash/Dashboard";
 import Employees from "./user/Admin_Employess/Employees";
 import Attendance from "./user/Admin_Attendance/Attendance";
@@ -42,7 +42,7 @@ const App = () => {
       <Route path="/forgot" element={<PublicRoute><AuthLayout><Fform /></AuthLayout></PublicRoute>} />
 
       {/* Protected routes — redirect to / if not logged in */}
-      <Route element={<ProtectedRoute><Home /></ProtectedRoute>}>
+      <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
         <Route path="/dashboard"     element={<Dashboard />} />
         {/* All roles */}
         <Route path="/attendance"    element={<Attendance />} />

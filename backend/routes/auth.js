@@ -6,7 +6,7 @@ const {
   refresh, logout, getMe,
   updateProfile, changePassword,
 } = require("../controllers/authController");
-const { authenticate } = require("../middleware/auth");
+const { authenticate, restrictTo } = require("../middleware/auth");
 
 const handleValidation = (req, res, next) => {
   const errors = validationResult(req);
@@ -57,5 +57,28 @@ router.post("/logout",     logout);
 router.get("/me",              authenticate, getMe);
 router.put("/profile",         authenticate, updateProfile);
 router.put("/change-password", authenticate, changePassword);
+router.get("/users",           authenticate, restrictTo("admin","superAdmin"), async (req, res) => {
+  const User = require("../models/User");
+  const Employee = require("../models/Employee");
+  try {
+    const users = await User.find({}, "firstName lastName systemEmail role isActive createdAt").sort({ createdAt: -1 });
+    const result = await Promise.all(users.map(async u => {
+      const emp = await Employee.findOne({ userId: u._id }, "department designation");
+      return { ...u.toObject(), department: emp?.department || "", designation: emp?.designation || "" };
+    }));
+    res.json({ success: true, data: result });
+  } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+router.put("/users/:id/role",  authenticate, restrictTo("admin","superAdmin"), async (req, res) => {
+  const User = require("../models/User");
+  try {
+    const { role } = req.body;
+    if (!["employee","hr","admin","superAdmin"].includes(role))
+      return res.status(400).json({ success: false, message: "Invalid role" });
+    const user = await User.findByIdAndUpdate(req.params.id, { role }, { new: true });
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+    res.json({ success: true, message: "Role updated", data: user });
+  } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
 
 module.exports = router;
