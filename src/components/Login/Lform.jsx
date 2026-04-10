@@ -8,7 +8,7 @@ import api from "../../services/api";
 
 const Lform = () => {
   const { login } = useAuth();
-  const { t, isDark, toggleTheme, lang, setLang, LANGUAGES } = useThemeLang();
+  const { t, isDark, toggleTheme } = useThemeLang();
 
   const [step, setStep]               = useState("credentials");
   const [mfaMethod, setMfaMethod]     = useState("");
@@ -93,13 +93,6 @@ const Lform = () => {
     <div className="relative">
       {/* Top-right quick controls for auth pages */}
       <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
-        <select value={lang} onChange={(e) => setLang(e.target.value)}
-          className="text-xs rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-1
-            bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 focus:outline-none transition">
-          {LANGUAGES.map((l) => (
-            <option key={l.code} value={l.code}>{l.flag} {l.short}</option>
-          ))}
-        </select>
         <button onClick={toggleTheme}
           className="w-8 h-8 rounded-lg border border-gray-200 dark:border-gray-700
             bg-white dark:bg-gray-900 flex items-center justify-center text-sm transition hover:bg-gray-50 dark:hover:bg-gray-800">

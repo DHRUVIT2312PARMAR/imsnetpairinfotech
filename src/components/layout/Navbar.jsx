@@ -178,43 +178,6 @@ const NotificationPanel = ({ onClose }) => {
 };
 
 // ─────────────────────────────────────────────────────────────
-//  Language Picker
-// ─────────────────────────────────────────────────────────────
-const LanguagePicker = ({ onClose }) => {
-  const { lang, setLang, LANGUAGES } = useThemeLang();
-
-  return (
-    <div className="absolute right-0 top-full mt-2.5 w-52 z-50 rounded-2xl
-      bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800
-      shadow-2xl overflow-hidden animate-fade-in-down">
-
-      <div className="px-3 py-2.5 border-b border-gray-100 dark:border-gray-800">
-        <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-          Language / भाषा
-        </p>
-      </div>
-
-      <div className="py-1.5 max-h-72 overflow-y-auto">
-        {LANGUAGES.map((l) => (
-          <button key={l.code}
-            onClick={() => { setLang(l.code); onClose(); }}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm transition-colors
-              ${lang === l.code
-                ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400'
-                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
-              }`}
-          >
-            <span className="text-base">{l.flag}</span>
-            <span className="flex-1 text-left">{l.label}</span>
-            {lang === l.code && <i className="ri-check-line text-orange-500" />}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// ─────────────────────────────────────────────────────────────
 //  Theme Toggle Button (animated sun/moon)
 // ─────────────────────────────────────────────────────────────
 const ThemeToggle = () => {
@@ -333,7 +296,6 @@ const Navbar = ({ sidebarCollapsed }) => {
 
   const [notifOpen,   setNotifOpen]   = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [langOpen,    setLangOpen]    = useState(false);
   const [today,       setToday]       = useState('');
 
   // Live unread count (independent of panel)
@@ -357,12 +319,10 @@ const Navbar = ({ sidebarCollapsed }) => {
   // Refs
   const notifRef   = useOutsideClick(useCallback(() => setNotifOpen(false),   []));
   const profileRef = useOutsideClick(useCallback(() => setProfileOpen(false), []));
-  const langRef    = useOutsideClick(useCallback(() => setLangOpen(false),    []));
 
   // Close others when one opens
-  const openNotif   = () => { setNotifOpen((o) => !o);   setProfileOpen(false); setLangOpen(false); };
-  const openProfile = () => { setProfileOpen((o) => !o); setNotifOpen(false);   setLangOpen(false); };
-  const openLang    = () => { setLangOpen((o) => !o);    setNotifOpen(false);   setProfileOpen(false); };
+  const openNotif   = () => { setNotifOpen((o) => !o);   setProfileOpen(false); };
+  const openProfile = () => { setProfileOpen((o) => !o); setNotifOpen(false); };
 
   const userName = `${user?.firstName} ${user?.lastName}`;
   const userAvatar = user?.profile?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=f97316&color=fff&size=32&bold=true`;
@@ -454,21 +414,6 @@ const Navbar = ({ sidebarCollapsed }) => {
 
         {/* Divider */}
         <div className="w-px h-6 bg-gray-200 dark:bg-gray-700" />
-
-        {/* ── Language picker ── */}
-        <div className="relative" ref={langRef}>
-          <button onClick={openLang}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold
-              text-gray-600 dark:text-gray-300
-              hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            title="Change language">
-            <span className="text-base leading-none">{currentLang.flag}</span>
-            <span className="hidden sm:inline">{currentLang.short}</span>
-            <i className={`ri-arrow-down-s-line text-gray-400 text-xs transition-transform duration-200
-              ${langOpen ? 'rotate-180' : ''}`} />
-          </button>
-          {langOpen && <LanguagePicker onClose={() => setLangOpen(false)} />}
-        </div>
 
         {/* ── Theme toggle ── */}
         <ThemeToggle />
