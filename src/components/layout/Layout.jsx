@@ -1,9 +1,8 @@
 // src/components/layout/Layout.jsx
-// Provider is in main.jsx — Layout just renders the shell
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
-import Navbar  from './Navbar';
+import Navbar from './Navbar';
 
 const COLLAPSED_KEY = 'np_sidebar_collapsed';
 
@@ -12,33 +11,32 @@ const Layout = () => {
     () => localStorage.getItem(COLLAPSED_KEY) === 'true'
   );
 
-  const toggle = () => setCollapsed((c) => {
-    localStorage.setItem(COLLAPSED_KEY, String(!c));
-    return !c;
-  });
-
-  const sideW = collapsed ? 64 : 240;
+  const toggleSidebar = () => {
+    setCollapsed((prev) => {
+      const newValue = !prev;
+      localStorage.setItem(COLLAPSED_KEY, String(newValue));
+      return newValue;
+    });
+  };
 
   return (
-    <div style={{ 
-      minHeight: '100vh', 
-      background: 'var(--bg-page)',
-      position: 'relative',
-    }}>
-      <Sidebar collapsed={collapsed} onToggle={toggle} />
-      <Navbar  sidebarCollapsed={collapsed} />
-
-      {/* Content area — offset by sidebar + topbar */}
-      <main style={{
-        marginLeft: sideW,
-        marginTop: 64,
-        minHeight: 'calc(100vh - 64px)',
-        transition: 'margin-left 300ms ease',
-        background: 'var(--bg-page)',
-        position: 'relative',
-        zIndex: 1,
-      }}>
-        <div style={{ padding: 24 }}>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      {/* Sidebar - Fixed left */}
+      <Sidebar collapsed={collapsed} onToggle={toggleSidebar} />
+      
+      {/* Navbar - Fixed top, offset by sidebar */}
+      <Navbar sidebarCollapsed={collapsed} />
+      
+      {/* Main content - Offset by both sidebar and navbar */}
+      <main 
+        className={`
+          min-h-screen
+          pt-16
+          transition-all duration-300
+          ${collapsed ? 'ml-16' : 'ml-60'}
+        `}
+      >
+        <div className="p-6">
           <Outlet />
         </div>
       </main>
