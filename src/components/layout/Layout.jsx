@@ -20,18 +20,23 @@ const Layout = () => {
   const sideW = collapsed ? 64 : 240;
 
   return (
-    // overflow:hidden on root so nothing bleeds out
-    <div style={{ minHeight: '100vh', background: 'var(--bg-page)', overflow: 'hidden' }}>
+    <div style={{ 
+      minHeight: '100vh', 
+      background: 'var(--bg-page)',
+      position: 'relative',
+    }}>
       <Sidebar collapsed={collapsed} onToggle={toggle} />
       <Navbar  sidebarCollapsed={collapsed} />
 
       {/* Content area — offset by sidebar + topbar */}
       <main style={{
         marginLeft: sideW,
-        paddingTop: 64,
-        minHeight: '100vh',
+        marginTop: 64,
+        minHeight: 'calc(100vh - 64px)',
         transition: 'margin-left 300ms ease',
         background: 'var(--bg-page)',
+        position: 'relative',
+        zIndex: 1,
       }}>
         <div style={{ padding: 24 }}>
           <Outlet />
