@@ -1,5 +1,4 @@
 // src/components/layout/Layout.jsx
-// Provider is in main.jsx — Layout just renders the shell
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';

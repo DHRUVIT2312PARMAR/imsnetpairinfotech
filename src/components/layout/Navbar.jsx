@@ -336,27 +336,31 @@ const Navbar = ({ sidebarCollapsed }) => {
       ${sidebarCollapsed ? 'left-16' : 'left-60'}
     `}>
 
-      {/* ── Logo + Company name ─────────────────────────────── */}
-      <div className="flex items-center gap-2.5 mr-3">
-        <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center shrink-0">
+      {/* ── Logo + Brand ── */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+        {/* 32×32 hard-constrained logo */}
+        <div style={{
+          width: 32, height: 32, minWidth: 32, maxWidth: 32,
+          minHeight: 32, maxHeight: 32,
+          borderRadius: 8, overflow: 'hidden',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          flexShrink: 0,
+        }}>
           <img
-            src="/logo.png"
-            alt="Netpair"
-            className="w-8 h-8 object-contain"
+            src="/logo1.png"
+            alt="NP"
             onError={(e) => {
               e.currentTarget.style.display = 'none';
-              e.currentTarget.parentElement.innerHTML = `
-                <span style="font-weight:800;font-size:11px;color:#f97316;font-family:sans-serif;letter-spacing:-0.5px">NP</span>`;
+              e.currentTarget.parentElement.style.background = '#F26B2E';
+              e.currentTarget.insertAdjacentHTML('afterend',
+                '<span style="color:#fff;font-weight:900;font-size:11px;letter-spacing:-1px">NP</span>');
             }}
+            style={{ width: 32, height: 32, objectFit: 'contain', display: 'block' }}
           />
         </div>
-        <div className="hidden md:block">
-          <p className="text-sm font-extrabold text-gray-900 dark:text-white leading-tight tracking-tight">
-            Netpair
-          </p>
-          <p className="text-[9px] text-orange-500 font-semibold leading-tight tracking-wide uppercase">
-            Infotech
-          </p>
+        <div style={{ lineHeight: 1.1 }}>
+          <p style={{ fontSize: 12, fontWeight: 900, color: 'var(--text-primary)', margin: 0 }}>Netpair</p>
+          <p style={{ fontSize: 8, fontWeight: 700, color: '#F26B2E', letterSpacing: '0.12em', textTransform: 'uppercase', margin: 0 }}>Infotech</p>
         </div>
       </div>
 

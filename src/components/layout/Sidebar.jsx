@@ -6,38 +6,82 @@ import { useThemeLang } from '../../context/ThemeLanguageContext';
 import api from '../../services/api';
 import { getNavForRole, BADGE_ENDPOINTS } from '../../config/navConfig';
 
-// ─── Logo block inside sidebar ────────────────────────────────
-const SidebarLogo = ({ collapsed }) => (
-  <div className={`flex items-center gap-2.5 h-16 border-b
-    border-gray-100 dark:border-gray-800 shrink-0 transition-all
-    ${collapsed ? 'px-3 justify-center' : 'px-4'}`}>
+// ─── Logo — completely self-contained, never bleeds outside ──
+const SidebarLogo = ({ collapsed }) => {
+  const [imgFailed, setImgFailed] = useState(false);
 
-    {/* Logo mark */}
-    <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center shrink-0">
-      <img
-        src="/logo.png"
-        alt="Netpair"
-        className="w-8 h-8 object-contain"
-        onError={(e) => {
-          e.currentTarget.style.display = 'none';
-          e.currentTarget.parentElement.innerHTML =
-            `<span style="font-weight:800;font-size:11px;color:#f97316;letter-spacing:-0.5px">NP</span>`;
+  return (
+    // Outer: fixed height, never grows, clips overflow
+    <div
+      style={{
+        height: 64,
+        minHeight: 64,
+        maxHeight: 64,
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        gap: collapsed ? 0 : 10,
+        padding: collapsed ? '0 12px' : '0 16px',
+        borderBottom: '1px solid var(--border-default)',
+        flexShrink: 0,
+      }}
+    >
+      {/* Logo mark — hard 32×32, never larger */}
+      <div
+        style={{
+          width: 32,
+          minWidth: 32,
+          maxWidth: 32,
+          height: 32,
+          minHeight: 32,
+          maxHeight: 32,
+          borderRadius: 8,
+          overflow: 'hidden',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: imgFailed ? '#F26B2E' : 'transparent',
+          flexShrink: 0,
         }}
-      />
-    </div>
+      >
+        {imgFailed ? (
+          <span style={{ color: '#fff', fontWeight: 900, fontSize: 11, letterSpacing: -1 }}>NP</span>
+        ) : (
+          <img
+            src="/logo1.png"
+            alt="Netpair"
+            onError={() => setImgFailed(true)}
+            style={{
+              width: 32,
+              height: 32,
+              objectFit: 'contain',
+              display: 'block',
+            }}
+          />
+        )}
+      </div>
 
-    {/* Name — hides when collapsed */}
-    <div className={`overflow-hidden transition-all duration-200
-      ${collapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
-      <p className="text-sm font-extrabold text-gray-900 dark:text-white leading-tight tracking-tight whitespace-nowrap">
-        Netpair
-      </p>
-      <p className="text-[9px] text-orange-500 font-semibold leading-tight tracking-widest uppercase whitespace-nowrap">
-        Infotech
-      </p>
+      {/* Company name — hidden when collapsed */}
+      <div
+        style={{
+          overflow: 'hidden',
+          width: collapsed ? 0 : 'auto',
+          opacity: collapsed ? 0 : 1,
+          transition: 'width 200ms ease, opacity 200ms ease',
+          whiteSpace: 'nowrap',
+          flexShrink: 0,
+        }}
+      >
+        <p style={{ fontSize: 13, fontWeight: 900, color: 'var(--text-primary)', lineHeight: 1.2, margin: 0 }}>
+          Netpair
+        </p>
+        <p style={{ fontSize: 8, fontWeight: 700, color: '#F26B2E', letterSpacing: '0.12em', textTransform: 'uppercase', margin: 0 }}>
+          Infotech
+        </p>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 // ─── Single nav item ──────────────────────────────────────────
 const NavItem = ({ item, collapsed, badge, depth = 0 }) => {
@@ -167,7 +211,7 @@ const Sidebar = ({ collapsed, onToggle }) => {
       border-r border-gray-100 dark:border-gray-800
       shadow-sm flex flex-col transition-all duration-300 ease-in-out
       ${collapsed ? 'w-16' : 'w-60'}
-    `}>
+    `} style={{ overflow: 'hidden' }}>
       <SidebarLogo collapsed={collapsed} />
 
       {/* Collapse toggle bubble */}
